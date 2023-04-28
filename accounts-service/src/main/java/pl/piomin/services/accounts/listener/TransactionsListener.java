@@ -23,6 +23,10 @@ public class TransactionsListener {
         this.kafkaTemplate = kafkaTemplate;
         this.repository = repository;
     }
+    
+    /*
+    Agora, todas as mensagens foram recebidas após o produtor confirmar a transação. Existem três encadeamentos de consumidores quando definimos o @KafkaListener concurrencyparâmetro como 3.
+    .*
 
     @KafkaListener(
             id = "transactions",
