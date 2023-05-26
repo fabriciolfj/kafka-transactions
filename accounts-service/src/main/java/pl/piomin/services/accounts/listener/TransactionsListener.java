@@ -10,8 +10,13 @@ import pl.piomin.services.accounts.domain.Account;
 import pl.piomin.services.accounts.repository.AccountRepository;
 import pl.piomin.services.common.model.Order;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 @Service
 public class TransactionsListener {
+
+    ExecutorService executorService = Executors.newFixedThreadPool(30);
 
     private static final Logger LOG = LoggerFactory
             .getLogger(TransactionsListener.class);
@@ -26,7 +31,7 @@ public class TransactionsListener {
     
     /*
     Agora, todas as mensagens foram recebidas após o produtor confirmar a transação. Existem três encadeamentos de consumidores quando definimos o @KafkaListener concurrencyparâmetro como 3.
-    .*
+    .*/
 
     @KafkaListener(
             id = "transactions",
@@ -36,7 +41,7 @@ public class TransactionsListener {
     @Transactional("kafkaTransactionManager")
     public void listen(Order order) {
         LOG.info("Received: {}", order);
-        process(order);
+        executorService.submit(() -> process(order));
     }
 
     private void process(Order order) {
